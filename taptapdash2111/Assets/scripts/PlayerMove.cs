@@ -1,3 +1,4 @@
+п»їusing System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,21 +13,32 @@ public class PlayerMove : MonoBehaviour
     private bool _isGround;
     private bool _isJump;
 
-    private Vector3 _movement; //смещение в мировых кординатах
+    private Vector3 _movement; //СЃРјРµС‰РµРЅРёРµ РІ РјРёСЂРѕРІС‹С… РєРѕСЂРґРёРЅР°С‚Р°С…
 
-    private float _velosity; 
+    private Vector3 _previosPosition;
+
+    private float _velosity;
+
+    private float _rotationX;
 
     private void Start()
     {
+        _previosPosition = transform.position;
+        _rotationX = transform.rotation.x;
         _isJump = false;
         _rb = GetComponent<Rigidbody>();
-        _movement = Vector3.forward;  //настройка смещения для движения вперед
+        _movement = Vector3.forward;  //РЅР°СЃС‚СЂРѕР№РєР° СЃРјРµС‰РµРЅРёСЏ РґР»СЏ РґРІРёР¶РµРЅРёСЏ РІРїРµСЂРµРґ
     }
 
-    
     private void FixedUpdate()
     {
-        //установить позицию героя  т.е. текущее положение + смещение умноженное на скорость и на изменение времени
+        _velosity = (_previosPosition - transform.position).magnitude / Time.fixedDeltaTime;
+        
+        Debug.Log(_velosity);
+        
+        _previosPosition = transform.position;
+
+        //СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ РіРµСЂРѕСЏ  С‚.Рµ. С‚РµРєСѓС‰РµРµ РїРѕР»РѕР¶РµРЅРёРµ + СЃРјРµС‰РµРЅРёРµ СѓРјРЅРѕР¶РµРЅРЅРѕРµ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ Рё РЅР° РёР·РјРµРЅРµРЅРёРµ РІСЂРµРјРµРЅРё
         _rb.MovePosition(transform.position + _movement * _speed * Time.fixedDeltaTime); 
 
         if (_isJump)
@@ -45,6 +57,11 @@ public class PlayerMove : MonoBehaviour
         {
             _movement.y = 0;
         }
+
+        if (_velosity < 1 && transform.position.z >= 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
           
     }
 
@@ -54,6 +71,7 @@ public class PlayerMove : MonoBehaviour
         {
             _isGround = false;
             _isJump = true;
+            StartCoroutine(rotateCube());
         }
     }
 
@@ -70,5 +88,13 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-
+    IEnumerator rotateCube()
+    {
+        for (int i = 0; i < 90; i++)
+        {
+            _rotationX += 1;
+            transform.rotation = Quaternion.Euler(_rotationX, 0, 0);
+            yield return new WaitForSeconds(0.0005f);
+        }
+    }
 }
