@@ -44,7 +44,6 @@ public class PlayerMove : MonoBehaviour
         if (_isJump)
         {
             _isJump = false;
-            //_rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
             _movement.y = _jumpForce;
         }
 
@@ -62,7 +61,12 @@ public class PlayerMove : MonoBehaviour
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
-          
+
+        if (_velosity > 40 && transform.position.z >= 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
     }
 
     private void Update()
@@ -94,7 +98,16 @@ public class PlayerMove : MonoBehaviour
         {
             _rotationX += 1;
             transform.rotation = Quaternion.Euler(_rotationX, 0, 0);
-            yield return new WaitForSeconds(0.0005f);
+            yield return new WaitForSecondsRealtime(0.001f);
         }
+        /*float rotationStep = 1f; // Шаг вращения за кадр
+        float targetRotation = _rotationX + 90f; // Целевой угол
+
+        while (_rotationX < targetRotation)
+        {
+            _rotationX += rotationStep;
+            transform.rotation = Quaternion.Euler(_rotationX, 0, 0);
+            yield return null; // Ждём 1 кадр (не зависит от FPS)
+        }*/
     }
 }
